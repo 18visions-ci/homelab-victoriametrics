@@ -13,7 +13,7 @@
   shell: |
     wget https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/{{ victoria_metrics_version }}/victoria-metrics-linux-amd64-{{ victoria_metrics_version }}.tar.gz
     tar -xvzf victoria-metrics-linux-amd64-{{ victoria_metrics_version }}.tar.gz
-    mv victoria-metrics-linux-amd64-{{ victoria_metrics_version }}/victoria-metrics-prod /usr/local/bin/victoriametrics
+    mv victoria-metrics-prod /usr/local/bin/victoria-metrics-prod
     rm -rf victoria-metrics-linux-amd64-{{ victoria_metrics_version }}*
 
 - name: Debug to list all files in the current directory
@@ -41,3 +41,7 @@
     group: root
     mode: '0755'
   when: vm_binary.stat.exists  # Only set permissions if the file exists
+
+
+wget https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/v1.114.0/victoria-metrics-linux-amd64-v1.114.0.tar.gz
+tar -xvzf victoria-metrics-linux-amd64-v1.114.0.tar.gz
