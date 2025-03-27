@@ -16,8 +16,8 @@
     mv victoria-metrics-linux-amd64-{{ victoria_metrics_version }}/victoria-metrics /usr/local/bin/victoriametrics
     rm -rf victoria-metrics-linux-amd64-{{ victoria_metrics_version }}*
 
-- name: Debug to list the contents of the extracted directory
-  shell: ls -l victoria-metrics-linux-amd64-{{ victoria_metrics_version }}
+- name: Debug to list all files in the current directory
+  shell: ls -l
   register: extracted_files
   changed_when: false
 
