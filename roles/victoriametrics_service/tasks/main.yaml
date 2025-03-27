@@ -13,7 +13,6 @@
     owner: victoriametrics
     group: victoriametrics
     recurse: yes
-  become: yes  # Ensure we have elevated privileges to modify ownership
 
 - name: Fix NFS share permissions if needed (temporary fix for UID/GID issues)
   command: chown -R victoriametrics:victoriametrics {{ victoria_metrics_dir }}
