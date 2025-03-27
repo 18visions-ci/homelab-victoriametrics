@@ -1,11 +1,23 @@
 ---
+- name: Ensure 'users' group exists with GID 100
+  group:
+    name: users
+    gid: 100
+    state: present
+
+- name: Add 'victoriametrics' user to 'users' group
+  user:
+    name: victoriametrics
+    groups: users
+    append: yes
+
 - name: Ensure the directory for VictoriaMetrics data exists on NAS
   file:
     path: "{{ victoria_metrics_dir }}"
     state: directory
-    owner: victoriametrics
-    group: victoriametrics
-    mode: '0755'
+    owner: nick              # owner matching Unraid (uid 1000)
+    group: users             # group matching Unraid (gid 100)
+    mode: '0775'
 
 - name: Ensure correct ownership of the NFS mount directory (with become)
   file:
