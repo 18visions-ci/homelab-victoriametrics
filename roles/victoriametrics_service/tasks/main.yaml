@@ -15,9 +15,10 @@
   file:
     path: "{{ victoria_metrics_dir }}"
     state: directory
-    owner: nick              # owner matching Unraid (uid 1000)
-    group: users             # group matching Unraid (gid 100)
     mode: '0775'
+    owner: nick         # matches existing owner UID on Unraid
+    group: users        # matches existing group GID on Unraid
+  become: false         # IMPORTANT: prevent ansible from sudo/chown attempts
 
 - name: Ensure correct ownership of the NFS mount directory (with become)
   file:
