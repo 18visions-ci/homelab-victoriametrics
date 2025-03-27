@@ -15,6 +15,11 @@
     recurse: yes
   become: yes  # Ensure we have elevated privileges to modify ownership
 
+- name: Fix NFS share permissions if needed (temporary fix for UID/GID issues)
+  command: chown -R victoriametrics:victoriametrics {{ victoria_metrics_dir }}
+  become: yes
+  when: ansible_facts['os_family'] == "Debian"  # Check if it's an Ubuntu-based system
+
 - name: Copy the systemd service file for VictoriaMetrics
   copy:
     src: victoriametrics.service  # This is now in the 'files' directory
