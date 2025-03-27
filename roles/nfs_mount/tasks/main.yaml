@@ -1,0 +1,13 @@
+---
+- name: Ensure required directories exist
+  file:
+    path: "{{ nas_mount_point }}"
+    state: directory
+
+- name: Mount the NFS share from Unraid NAS
+  mount:
+    path: "{{ nas_mount_point }}"
+    src: "{{ nas_server }}:{{ nas_share }}"
+    fstype: nfs
+    opts: defaults
+    state: mounted

@@ -1,0 +1,7 @@
+---
+- name: Create victoriametrics user
+  user:
+    name: victoriametrics
+    shell: /bin/bash
+    create_home: no  # No need for a home directory
+    state: present

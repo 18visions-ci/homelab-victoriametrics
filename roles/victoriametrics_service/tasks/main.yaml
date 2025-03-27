@@ -1,0 +1,44 @@
+---
+- name: Ensure the directory for VictoriaMetrics data exists on NAS
+  file:
+    path: "{{ victoria_metrics_dir }}"
+    state: directory
+    owner: victoriametrics
+    group: victoriametrics
+    mode: '0755'
+
+- name: Set the correct ownership for the VictoriaMetrics directory
+  file:
+    path: "{{ victoria_metrics_dir }}"
+    owner: victoriametrics
+    group: victoriametrics
+    recurse: yes
+
+- name: Create systemd service file for VictoriaMetrics
+  copy:
+    dest: /etc/systemd/system/victoriametrics.service
+    content: |
+      [Unit]
+      Description=VictoriaMetrics
+      After=network.target
+
+      [Service]
+      ExecStart={{ victoria_metrics_bin }} -storageDataPath={{ victoria_metrics_dir }} -httpListenAddr=0.0.0.0:8428
+      User=victoriametrics
+      Group=victoriametrics
+      Restart=always
+      LimitNOFILE=4096
+
+      [Install]
+      WantedBy=multi-user.target
+  mode: '0644'
+
+- name: Reload systemd to register the new service
+  systemd:
+    daemon_reload: yes
+
+- name: Enable and start VictoriaMetrics service
+  systemd:
+    name: victoriametrics
+    state: started
+    enabled: yes

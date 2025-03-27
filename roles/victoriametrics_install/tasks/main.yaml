@@ -1,0 +1,23 @@
+---
+- name: Install dependencies
+  apt:
+    name:
+      - curl
+      - tar
+      - wget
+      - gnupg
+    state: present
+
+- name: Download VictoriaMetrics binary
+  shell: |
+    wget https://github.com/VictoriaMetrics/VictoriaMetrics/releases/download/{{ victoria_metrics_version }}/victoria-metrics-linux-amd64-{{ victoria_metrics_version }}.tar.gz
+    tar -xvzf victoria-metrics-linux-amd64-{{ victoria_metrics_version }}.tar.gz
+    mv victoria-metrics-linux-amd64-{{ victoria_metrics_version }}/victoria-metrics /usr/local/bin/victoriametrics
+    rm -rf victoria-metrics-linux-amd64-{{ victoria_metrics_version }}*
+
+- name: Set permissions for VictoriaMetrics binary
+  file:
+    path: "{{ victoria_metrics_bin }}"
+    owner: root
+    group: root
+    mode: '0755'
