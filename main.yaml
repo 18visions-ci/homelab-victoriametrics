@@ -11,7 +11,7 @@
     nas_share: "/mnt/user/victoriametrics"  # Replace with your updated NFS share path on Unraid
     victoria_metrics_dir: "/mnt/nas/victoriametrics"
     victoria_metrics_bin: "/usr/local/bin/victoriametrics"
-    victoria_metrics_version: "v1.110.4"  # Replace with the desired version of VictoriaMetrics
+    victoria_metrics_version: "v1.114.0"  # Replace with the desired version of VictoriaMetrics
 
   roles:
     - nfs_mount
