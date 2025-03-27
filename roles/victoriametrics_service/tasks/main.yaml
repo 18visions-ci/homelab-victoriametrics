@@ -26,7 +26,7 @@
 
 - name: Copy the systemd service file for VictoriaMetrics
   copy:
-    src: victoriametrics.service
+    src: victoriametrics.service.j2
     dest: /etc/systemd/system/victoriametrics.service
     mode: '0644'
 
