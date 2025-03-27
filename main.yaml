@@ -7,7 +7,7 @@
   vars:
     # Define NFS mount details for the Unraid NAS
     nas_mount_point: "/mnt/nas"
-    nas_server: {{ nas_ip }}  # Replace with your NAS IP or hostname
+    nas_server: "{{ nas_ip }}"  # Replace with your NAS IP or hostname
     nas_share: "/mnt/user/victoriametrics"  # Replace with your updated NFS share path on Unraid
     victoria_metrics_dir: "/mnt/nas/victoriametrics"
     victoria_metrics_bin: "/usr/local/bin/victoriametrics"
