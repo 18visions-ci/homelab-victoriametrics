@@ -1,4 +1,10 @@
 ---
+- name: Ensure nfs-common package is installed
+  apt:
+    name: nfs-common
+    state: present
+    update_cache: yes
+
 - name: Ensure required directories exist
   file:
     path: "{{ nas_mount_point }}"
@@ -7,7 +13,7 @@
 - name: Mount the NFS share from Unraid NAS
   mount:
     path: "{{ nas_mount_point }}"
-    src: "{{ nas_server }}:{{ nas_share }}"
+    src: "{{ nas_ip }}:{{ nas_share }}"  # Use the {{ nas_ip }} variable passed to the playbook
     fstype: nfs
     opts: defaults
     state: mounted
