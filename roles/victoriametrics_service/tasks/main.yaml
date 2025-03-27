@@ -6,6 +6,7 @@
     owner: victoriametrics
     group: victoriametrics
     mode: '0755'
+  become: yes  # Ensure we have elevated privileges to create the directory
 
 - name: Ensure correct ownership of the NFS mount directory (with become)
   file:
