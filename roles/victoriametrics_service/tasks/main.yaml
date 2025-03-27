@@ -25,7 +25,7 @@
   become: false  # Prevent permission/ownership modifications (not permitted on NAS mounts)
 
 - name: Copy the systemd service file for VictoriaMetrics
-  copy:
+  template:
     src: victoriametrics.service.j2
     dest: /etc/systemd/system/victoriametrics.service
     mode: '0644'
