@@ -14,24 +14,11 @@
     group: victoriametrics
     recurse: yes
 
-- name: Create systemd service file for VictoriaMetrics
+- name: Copy the systemd service file for VictoriaMetrics
   copy:
+    src: victoriametrics.service  # This is now in the 'files' directory
     dest: /etc/systemd/system/victoriametrics.service
-    content: |
-      [Unit]
-      Description=VictoriaMetrics
-      After=network.target
-
-      [Service]
-      ExecStart={{ victoria_metrics_bin }} -storageDataPath={{ victoria_metrics_dir }} -httpListenAddr=0.0.0.0:8428
-      User=victoriametrics
-      Group=victoriametrics
-      Restart=always
-      LimitNOFILE=4096
-
-      [Install]
-      WantedBy=multi-user.target
-  mode: '0644'
+    mode: '0644'  # You can set permissions now, as the file is copied from 'files'
 
 - name: Reload systemd to register the new service
   systemd:
