@@ -7,12 +7,13 @@
     group: victoriametrics
     mode: '0755'
 
-- name: Set the correct ownership for the VictoriaMetrics directory
+- name: Ensure correct ownership of the NFS mount directory (with become)
   file:
     path: "{{ victoria_metrics_dir }}"
     owner: victoriametrics
     group: victoriametrics
     recurse: yes
+  become: yes  # Ensure we have elevated privileges to modify ownership
 
 - name: Copy the systemd service file for VictoriaMetrics
   copy:
