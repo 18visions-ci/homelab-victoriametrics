@@ -1,44 +1,36 @@
 ---
-- name: Ensure 'users' group exists with GID 100
+- name: Ensure 'users' group exists with GID 100 (matches Unraid NAS)
   group:
     name: users
     gid: 100
     state: present
 
-- name: Add 'victoriametrics' user to 'users' group
+- name: Add 'victoriametrics' user to 'users' group for NAS access
   user:
     name: victoriametrics
     groups: users
     append: yes
 
-- name: Ensure the directory for VictoriaMetrics data exists on NAS
+# IMPORTANT: Permissions and ownership on /mnt/nas/victoriametrics must be set directly on Unraid.
+# Ansible cannot change ownership or permissions of NAS-mounted directories remotely.
+# Ensure manually on Unraid (one-time setup):
+# mkdir -p /mnt/user/victoriametrics
+# chown nick:users /mnt/user/victoriametrics
+# chmod 775 /mnt/user/victoriametrics
+
+- name: Ensure the directory for VictoriaMetrics data exists (NAS-mounted)
   file:
     path: "{{ victoria_metrics_dir }}"
     state: directory
-    mode: '0775'
-    owner: nick         # matches existing owner UID on Unraid
-    group: users        # matches existing group GID on Unraid
-  become: false         # IMPORTANT: prevent ansible from sudo/chown attempts
-
-- name: Ensure correct ownership of the NFS mount directory (with become)
-  file:
-    path: "{{ victoria_metrics_dir }}"
-    owner: victoriametrics
-    group: victoriametrics
-    recurse: yes
-
-- name: Fix NFS share permissions if needed (temporary fix for UID/GID issues)
-  command: chown -R victoriametrics:victoriametrics {{ victoria_metrics_dir }}
-  become: yes
-  when: ansible_facts['os_family'] == "Debian"  # Check if it's an Ubuntu-based system
+  become: false  # Prevent permission/ownership modifications (not permitted on NAS mounts)
 
 - name: Copy the systemd service file for VictoriaMetrics
   copy:
-    src: victoriametrics.service  # This is now in the 'files' directory
+    src: victoriametrics.service
     dest: /etc/systemd/system/victoriametrics.service
-    mode: '0644'  # You can set permissions now, as the file is copied from 'files'
+    mode: '0644'
 
-- name: Reload systemd to register the new service
+- name: Reload systemd daemon
   systemd:
     daemon_reload: yes
 
