@@ -1,16 +1,4 @@
 ---
-- name: Ensure 'users' group exists with GID 100 (matches Unraid NAS)
-  group:
-    name: users
-    gid: 100
-    state: present
-
-- name: Add 'victoriametrics' user to 'users' group for NAS access
-  user:
-    name: victoriametrics
-    groups: users
-    append: yes
-
 # IMPORTANT: Permissions and ownership on /mnt/nas/victoriametrics must be set directly on Unraid.
 # Ansible cannot change ownership or permissions of NAS-mounted directories remotely.
 # Ensure manually on Unraid (one-time setup):
@@ -18,11 +6,6 @@
 # chown nick:users /mnt/user/victoriametrics
 # chmod 775 /mnt/user/victoriametrics
 
-- name: Ensure the directory for VictoriaMetrics data exists (NAS-mounted)
-  file:
-    path: "{{ victoria_metrics_dir }}"
-    state: directory
-  become: false  # Prevent permission/ownership modifications (not permitted on NAS mounts)
 
 - name: Copy the systemd service file for VictoriaMetrics
   template:
@@ -39,3 +22,12 @@
     name: victoriametrics
     state: started
     enabled: yes
+
+- name: Verify VictoriaMetrics is running
+  uri:
+    url: http://localhost:8428/health
+    return_content: yes
+  register: health_check
+  failed_when: "'OK' not in health_check.content"
+  retries: 3
+  delay: 10

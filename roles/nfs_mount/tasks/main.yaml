@@ -10,6 +10,12 @@
     path: "{{ nas_mount_point }}"
     state: directory
 
+- name: Ensure the directory for VictoriaMetrics data exists (NAS-mounted)
+  file:
+    path: "{{ victoria_metrics_dir }}"
+    state: directory
+  become: false  # Prevent permission/ownership modifications (not permitted on NAS mounts)
+
 - name: Mount the NFS share from Unraid NAS
   mount:
     path: "{{ nas_mount_point }}"

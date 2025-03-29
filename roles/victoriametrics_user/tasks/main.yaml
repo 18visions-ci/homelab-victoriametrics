@@ -5,3 +5,15 @@
     shell: /bin/bash
     create_home: no  # No need for a home directory
     state: present
+
+- name: Ensure 'users' group exists with GID 100 (matches Unraid NAS)
+  group:
+    name: users
+    gid: 100
+    state: present
+
+- name: Add 'victoriametrics' user to 'users' group for NAS access
+  user:
+    name: victoriametrics
+    groups: users
+    append: yes

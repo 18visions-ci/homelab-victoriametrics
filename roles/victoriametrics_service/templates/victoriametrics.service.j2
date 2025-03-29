@@ -3,7 +3,7 @@ Description=VictoriaMetrics
 After=network.target
 
 [Service]
-ExecStart={{ victoria_metrics_bin }} -storageDataPath={{ victoria_metrics_dir }} -httpListenAddr=0.0.0.0:8428
+ExecStart={{ victoria_metrics_bin }} -storageDataPath={{ victoria_metrics_dir }} -httpListenAddr=0.0.0.0:8428 -retentionPeriod=90d
 User=victoriametrics
 Group=victoriametrics
 Restart=always
