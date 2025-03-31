@@ -29,10 +29,29 @@
   debug:
     var: showmount_result.stdout_lines
 
-- name: Unmount any existing NFS mount
-  command: umount {{ nas_mount_point }}
+- name: Check if mount point is already mounted
+  shell: "mount | grep {{ nas_mount_point }}"
+  register: mount_check
+  changed_when: false
+  failed_when: false
+
+- name: Find processes using the mount point
+  shell: "lsof {{ nas_mount_point }} 2>/dev/null || echo 'No processes using mount'"
+  register: lsof_result
+  changed_when: false
+  failed_when: false
+  when: mount_check.rc == 0
+
+- name: Display processes using the mount point
+  debug:
+    var: lsof_result.stdout_lines
+  when: mount_check.rc == 0
+
+- name: Attempt lazy unmount (detach immediately)
+  command: "umount -l {{ nas_mount_point }}"
   ignore_errors: yes
   changed_when: false
+  when: mount_check.rc == 0
 
 - name: Mount the NFS share from Unraid NAS
   mount:
@@ -43,11 +62,16 @@
     state: mounted
 
 - name: Check if mount was successful
-  command: mount | grep {{ nas_mount_point }}
+  shell: "mount | grep {{ nas_mount_point }}"
   register: mount_result
   changed_when: false
   failed_when: false
   
+- name: Display mount details
+  debug:
+    var: mount_result.stdout_lines
+  when: mount_result.rc == 0
+
 - name: Fail if mount was unsuccessful
   fail:
     msg: "NFS mount failed. Please check your NAS server and share path."
