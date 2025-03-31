@@ -29,6 +29,11 @@
   debug:
     var: showmount_result.stdout_lines
 
+- name: Unmount any existing NFS mount
+  command: umount {{ nas_mount_point }}
+  ignore_errors: yes
+  changed_when: false
+
 - name: Mount the NFS share from Unraid NAS
   mount:
     path: "{{ nas_mount_point }}"
