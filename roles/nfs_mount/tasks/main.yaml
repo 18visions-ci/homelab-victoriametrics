@@ -17,7 +17,7 @@
       - "NAS Server: {{ nas_server }}"
       - "NAS Share: {{ nas_share }}"
       - "Mount Point: {{ nas_mount_point }}"
-      - "Environment: {{ environment | default('dev') }}"
+      - "Environment: {{ env | default('dev') }}"
 
 - name: Check NFS exports on server
   shell: "showmount -e {{ nas_server }}"
