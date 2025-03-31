@@ -11,12 +11,30 @@
     state: directory
     mode: '0755'
 
+- name: Debug NFS variables
+  debug:
+    msg: 
+      - "NAS Server: {{ nas_server }}"
+      - "NAS Share: {{ nas_share }}"
+      - "Mount Point: {{ nas_mount_point }}"
+      - "Environment: {{ environment | default('dev') }}"
+
+- name: Check NFS exports on server
+  shell: "showmount -e {{ nas_server }}"
+  register: showmount_result
+  ignore_errors: yes
+  changed_when: false
+
+- name: Display available NFS exports
+  debug:
+    var: showmount_result.stdout_lines
+
 - name: Mount the NFS share from Unraid NAS
   mount:
     path: "{{ nas_mount_point }}"
-    src: "{{ nas_server }}:{{ nas_share }}"  # Use nas_server instead of nas_ip
+    src: "{{ nas_server }}:{{ nas_share }}"
     fstype: nfs
-    opts: defaults
+    opts: "rw,soft,intr,nfsvers=4"
     state: mounted
 
 - name: Check if mount was successful
@@ -37,4 +55,4 @@
     mode: '0755'
     owner: victoriametrics
     group: victoriametrics
-  become: true  # We need root permissions to create this directory on the mounted share
+  become: true
