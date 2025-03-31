@@ -9,17 +9,32 @@
   file:
     path: "{{ nas_mount_point }}"
     state: directory
+    mode: '0755'
+
+- name: Mount the NFS share from Unraid NAS
+  mount:
+    path: "{{ nas_mount_point }}"
+    src: "{{ nas_server }}:{{ nas_share }}"  # Use nas_server instead of nas_ip
+    fstype: nfs
+    opts: defaults
+    state: mounted
+
+- name: Check if mount was successful
+  command: mount | grep {{ nas_mount_point }}
+  register: mount_result
+  changed_when: false
+  failed_when: false
+  
+- name: Fail if mount was unsuccessful
+  fail:
+    msg: "NFS mount failed. Please check your NAS server and share path."
+  when: mount_result.rc != 0
 
 - name: Ensure the directory for VictoriaMetrics data exists (NAS-mounted)
   file:
     path: "{{ victoria_metrics_dir }}"
     state: directory
-  become: false  # Prevent permission/ownership modifications (not permitted on NAS mounts)
-
-- name: Mount the NFS share from Unraid NAS
-  mount:
-    path: "{{ nas_mount_point }}"
-    src: "{{ nas_ip }}:{{ nas_share }}"  # Use the {{ nas_ip }} variable passed to the playbook
-    fstype: nfs
-    opts: defaults
-    state: mounted
+    mode: '0755'
+    owner: victoriametrics
+    group: victoriametrics
+  become: true  # We need root permissions to create this directory on the mounted share
