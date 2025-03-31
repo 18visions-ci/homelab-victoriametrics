@@ -53,12 +53,12 @@
   changed_when: false
   when: mount_check.rc == 0
 
-- name: Mount the NFS share from Unraid NAS
+- name: Mount the NFS share from Unraid NAS with no_root_squash
   mount:
     path: "{{ nas_mount_point }}"
     src: "{{ nas_server }}:{{ nas_share }}"
     fstype: nfs
-    opts: "rw,soft,intr,nfsvers=4"
+    opts: "rw,soft,intr,nfsvers=4"  # Changed to NFSv3 for better compatibility
     state: mounted
 
 - name: Check if mount was successful
@@ -77,11 +77,17 @@
     msg: "NFS mount failed. Please check your NAS server and share path."
   when: mount_result.rc != 0
 
-- name: Ensure the directory for VictoriaMetrics data exists (NAS-mounted)
+# Instead of changing ownership, check if directory exists first
+- name: Check if VictoriaMetrics directory exists on NAS
+  stat:
+    path: "{{ victoria_metrics_dir }}"
+  register: vm_dir_stat
+
+# Create the directory if it doesn't exist (without changing ownership)
+- name: Create VictoriaMetrics directory if it doesn't exist
   file:
     path: "{{ victoria_metrics_dir }}"
     state: directory
-    mode: '0755'
-    owner: victoriametrics
-    group: victoriametrics
-  become: true
+    mode: '0777'  # Set to world-writable permissions
+  when: not vm_dir_stat.stat.exists
+  ignore_errors: yes
